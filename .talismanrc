@@ -1,0 +1,4 @@
+fileignoreconfig:
+- filename: Gopkg.lock
+  checksum: 29a42fec40c138fb3951fadd5c995ac395d32d804a242a039b9164a2bc6b768d
+  ignore_detectors: []

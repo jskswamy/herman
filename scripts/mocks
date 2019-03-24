@@ -1,0 +1,47 @@
+#! /usr/bin/env bash
+
+set -ex
+
+rm -rf cmd/internal/mocks
+rm -rf pkg/internal/mocks
+
+mkdir -p pkg/internal/mocks
+mkdir -p pkg/internal/mocks/chart
+mkdir -p pkg/internal/mocks/upstaller
+mkdir -p pkg/internal/mocks/dependency_builder
+mkdir -p pkg/internal/mocks/client-go/kubernetes
+mkdir -p pkg/internal/mocks/client-go/kubernetes/typed/core/v1
+mkdir -p pkg/internal/mocks/client-go/kubernetes/typed/rbac/v1
+mockgen -destination pkg/internal/mocks/afero.go -package mocks -source ${GOPATH}/src/github.com/spf13/afero/afero.go
+mockgen -destination pkg/internal/mocks/store.go -package mocks -source pkg/config/store.go
+mockgen -destination pkg/internal/mocks/helm_client.go -package mocks -source pkg/helm/client.go
+mockgen -destination pkg/internal/mocks/chart/dependency_builder.go -package chartMocks -source pkg/stevedore/dependency_builder.go
+mockgen -destination pkg/internal/mocks/chart/chart_builder.go -package chartMocks -source pkg/stevedore/chart_builder.go
+mockgen -destination pkg/internal/mocks/file_utils.go -package mocks -source pkg/stevedore/file_utils.go
+mockgen -destination pkg/internal/mocks/chart_manager.go -package mocks -source pkg/stevedore/chart_manager.go
+mockgen -destination pkg/internal/mocks/upstaller/upstaller.go -package upstaller -source pkg/stevedore/upstaller.go
+mockgen -destination pkg/internal/mocks/http_client.go -package mocks -source pkg/stevedore/http_client.go
+mockgen -destination pkg/internal/mocks/client-go/kubernetes/clientset.go -package mocks -source ${GOPATH}/src/source.golabs.io/leap/stevedore/vendor/k8s.io/client-go/kubernetes/clientset.go
+mockgen k8s.io/client-go/kubernetes/typed/core/v1 CoreV1Interface > pkg/internal/mocks/client-go/kubernetes/typed/core/v1/core_client.go
+mockgen k8s.io/client-go/kubernetes/typed/core/v1 NamespaceInterface > pkg/internal/mocks/client-go/kubernetes/typed/core/v1/namespace.go
+mockgen k8s.io/client-go/kubernetes/typed/core/v1 ServiceAccountInterface > pkg/internal/mocks/client-go/kubernetes/typed/core/v1/serviceaccount.go
+mockgen k8s.io/client-go/kubernetes/typed/rbac/v1 RbacV1Interface  > pkg/internal/mocks/client-go/kubernetes/typed/rbac/v1/rbac_client.go
+mockgen k8s.io/client-go/kubernetes/typed/rbac/v1 RoleBindingInterface > pkg/internal/mocks/client-go/kubernetes/typed/rbac/v1/rolebinding.go
+mockgen -destination pkg/internal/mocks/tiller_installer.go -package mocks -source pkg/stevedore/init/tiller_installer.go
+mockgen -destination pkg/internal/mocks/resource.go -package mocks -source pkg/stevedore/k8s/resources/resource.go
+
+mkdir -p cmd/internal/mocks
+mkdir -p cmd/internal/mocks/mockProvider
+mkdir -p cmd/internal/mocks/mockManifest
+mockgen -destination cmd/internal/mocks/afero.go -package mocks -source ${GOPATH}/src/github.com/spf13/afero/afero.go
+mkdir -p cmd/migrate/internal/mocks
+mockgen -destination cmd/internal/mocks/store.go -package mocks -source pkg/config/store.go
+mockgen -destination cmd/internal/mocks/info.go -package mocks -source pkg/file/info.go
+mockgen -destination cmd/internal/mocks/file_utils.go -package mocks -source pkg/stevedore/file_utils.go
+mockgen -destination cmd/internal/mocks/mockProvider/context_provider.go -package mockProvider -source cmd/manifest/provider/context_provider.go
+mockgen -destination cmd/internal/mocks/mockProvider/ignore_provider.go -package mockProvider -source cmd/manifest/provider/ignore_provider.go
+mockgen -destination cmd/internal/mocks/mockProvider/manifest_provider.go -package mockProvider -source cmd/manifest/provider/manifest_provider.go
+mockgen -destination cmd/internal/mocks/mockProvider/override_provider.go -package mockProvider -source cmd/manifest/provider/override_provider.go
+mockgen -destination cmd/internal/mocks/mockProvider/env_provider.go -package mockProvider -source cmd/manifest/provider/env_provider.go
+mockgen -destination cmd/internal/mocks/mockManifest/reporter.go -package mockManifest -source cmd/manifest/reporter.go
+mockgen -destination cmd/migrate/internal/mocks/helm.go -package mocks -source cmd/migrate/add_chart_spec.go
